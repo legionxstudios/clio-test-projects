@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Clio Legal Deadline Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">Free Legal Toolkit</p>
+          <h1>Legal Deadline Calculator</h1>
+          <p class="hero-copy">
+            Calculate filing and response deadlines in seconds, using court-style business day logic,
+            reminder offsets, and optional calendar export.
+          </p>
+          <ul class="hero-list">
+            <li>Supports calendar days, business days, and “court days” logic.</li>
+            <li>Auto-adjusts deadlines that land on weekends and holidays.</li>
+            <li>Save your deadline pack to calendar with a free Clio account.</li>
+          </ul>
+        </div>
+        <aside class="insight-card">
+          <h2>How this one-ups typical calculators</h2>
+          <ol>
+            <li><strong>Scenario-aware reminders:</strong> instantly generate 3 reminder checkpoints.</li>
+            <li><strong>Semi-gated value:</strong> core calculation stays free, export requires email.</li>
+            <li><strong>Action-ready output:</strong> add to calendar through an .ics download workflow.</li>
+          </ol>
+        </aside>
+      </div>
+    </header>
+
+    <main class="container main-grid">
+      <section class="card" aria-labelledby="calculator-heading">
+        <h2 id="calculator-heading">Calculate a deadline</h2>
+        <form id="calculator-form">
+          <div class="field-grid">
+            <label>
+              Trigger date
+              <input required type="date" id="triggerDate" />
+            </label>
+
+            <label>
+              Deadline direction
+              <select id="direction">
+                <option value="after">After trigger date</option>
+                <option value="before">Before trigger date</option>
+              </select>
+            </label>
+
+            <label>
+              Number of days
+              <input required type="number" min="1" max="3650" value="30" id="dayCount" />
+            </label>
+
+            <label>
+              Counting method
+              <select id="countMethod">
+                <option value="calendar">Calendar days</option>
+                <option value="business">Business days (Mon–Fri)</option>
+                <option value="court">Court days (Mon–Fri + holidays)</option>
+              </select>
+            </label>
+
+            <label>
+              Weekend/holiday adjustment
+              <select id="rollRule">
+                <option value="next">Roll forward to next business day</option>
+                <option value="previous">Roll backward to previous business day</option>
+                <option value="none">No adjustment</option>
+              </select>
+            </label>
+
+            <label>
+              Jurisdiction profile
+              <select id="jurisdiction">
+                <option value="federal">US Federal (sample holidays)</option>
+                <option value="california">California (sample holidays)</option>
+                <option value="newyork">New York (sample holidays)</option>
+              </select>
+            </label>
+          </div>
+
+          <fieldset class="reminder-group">
+            <legend>Reminder offsets (days before deadline)</legend>
+            <div class="chips">
+              <label><input type="checkbox" value="30" checked />30</label>
+              <label><input type="checkbox" value="14" checked />14</label>
+              <label><input type="checkbox" value="7" checked />7</label>
+              <label><input type="checkbox" value="3" />3</label>
+              <label><input type="checkbox" value="1" />1</label>
+            </div>
+          </fieldset>
+
+          <div class="actions">
+            <button type="submit">Calculate deadline</button>
+            <button type="button" id="resetBtn" class="ghost">Reset</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card output" aria-live="polite">
+        <h2>Results</h2>
+        <div id="resultEmpty">Enter details to calculate your legal deadline.</div>
+        <div id="resultContent" hidden>
+          <p class="deadline" id="deadlineText"></p>
+          <p id="metaText"></p>
+
+          <h3>Suggested reminders</h3>
+          <ul id="reminderList"></ul>
+
+          <div class="actions">
+            <button type="button" id="downloadIcs">Download .ics file</button>
+            <button type="button" id="connectCalendar" class="ghost">Connect calendar in Clio</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section class="cta-strip">
+      <div class="container cta-inner">
+        <div>
+          <h2>Need more than a calculator?</h2>
+          <p>Automate deadlines, reminders, and task workflows with Clio Manage.</p>
+        </div>
+        <a href="#" class="cta-btn">Start free trial</a>
+      </div>
+    </section>
+
+    <dialog id="leadDialog">
+      <form method="dialog" id="leadForm">
+        <h2>Save this deadline to your calendar</h2>
+        <p>
+          Core calculations are always free. Enter your details to download calendar events and get
+          deadline updates.
+        </p>
+        <label>
+          Work email
+          <input type="email" id="leadEmail" required placeholder="you@firm.com" />
+        </label>
+        <label>
+          Firm name
+          <input type="text" id="leadFirm" required placeholder="Example Law LLP" />
+        </label>
+        <menu>
+          <button value="cancel" class="ghost" type="button" id="closeDialog">Cancel</button>
+          <button value="default" type="submit">Unlock export</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>
