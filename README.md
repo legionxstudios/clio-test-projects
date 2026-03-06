@@ -27,3 +27,11 @@ Then open:
 
 - `http://localhost:4173`
 
+
+## WordPress copy/paste version
+
+Use `wordpress-inline.html` for a single-file copy/paste implementation with inline CSS and JS.
+
+- Copy everything inside `<body>` (or the whole file if your editor allows custom HTML).
+- Paste into a WordPress **Custom HTML** block or page builder HTML widget.
+- If your theme strips `<script>`, use a plugin that allows inline scripts or enqueue the script separately.
