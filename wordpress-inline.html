@@ -1,0 +1,492 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clio Legal Deadline Calculator</title>
+  <style>
+    :root {
+      --clio-navy: #0d2f6f;
+      --clio-blue: #1367de;
+      --clio-light: #edf4ff;
+      --clio-ink: #1e2a39;
+      --clio-border: #cfd8e3;
+      --radius: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    .clio-calculator-wrap {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--clio-ink);
+      background: #f8fafc;
+      line-height: 1.5;
+    }
+
+    .clio-calculator-wrap .container {
+      width: min(1080px, 92vw);
+      margin: 0 auto;
+    }
+
+    .clio-calculator-wrap .hero {
+      background: linear-gradient(145deg, #0d2f6f, #1367de);
+      color: white;
+      padding: 3.5rem 0;
+    }
+
+    .clio-calculator-wrap .hero-grid {
+      display: grid;
+      gap: 1.5rem;
+      grid-template-columns: 1.6fr 1fr;
+    }
+
+    .clio-calculator-wrap .eyebrow {
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-size: 0.75rem;
+      margin: 0;
+      opacity: 0.8;
+    }
+
+    .clio-calculator-wrap h1 {
+      font-size: clamp(2rem, 4vw, 2.85rem);
+      margin: 0.4rem 0 1rem;
+      color: white;
+    }
+
+    .clio-calculator-wrap .hero-copy { margin-bottom: 0.8rem; max-width: 62ch; }
+    .clio-calculator-wrap .hero-list { margin: 0; padding-left: 1.2rem; }
+
+    .clio-calculator-wrap .insight-card {
+      background: rgba(255, 255, 255, 0.14);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: var(--radius);
+      padding: 1rem 1.1rem;
+      backdrop-filter: blur(2px);
+    }
+
+    .clio-calculator-wrap .main-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 1.25rem;
+      margin: -1.6rem auto 2rem;
+    }
+
+    .clio-calculator-wrap .card {
+      background: white;
+      border: 1px solid var(--clio-border);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      box-shadow: 0 8px 24px rgba(13, 47, 111, 0.08);
+    }
+
+    .clio-calculator-wrap .field-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.8rem;
+    }
+
+    .clio-calculator-wrap label,
+    .clio-calculator-wrap legend {
+      font-weight: 600;
+      font-size: 0.92rem;
+      color: #223249;
+      display: block;
+    }
+
+    .clio-calculator-wrap input,
+    .clio-calculator-wrap select,
+    .clio-calculator-wrap button { font: inherit; }
+
+    .clio-calculator-wrap input,
+    .clio-calculator-wrap select {
+      margin-top: 0.35rem;
+      width: 100%;
+      border: 1px solid var(--clio-border);
+      border-radius: 10px;
+      padding: 0.56rem 0.7rem;
+      background: white;
+    }
+
+    .clio-calculator-wrap fieldset {
+      border: 1px solid var(--clio-border);
+      border-radius: 10px;
+      margin: 1rem 0;
+    }
+
+    .clio-calculator-wrap .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+    }
+
+    .clio-calculator-wrap .chips label {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      background: var(--clio-light);
+      border-radius: 999px;
+      padding: 0.28rem 0.6rem;
+      font-weight: 500;
+    }
+
+    .clio-calculator-wrap .actions {
+      display: flex;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+    }
+
+    .clio-calculator-wrap button,
+    .clio-calculator-wrap .cta-btn {
+      background: var(--clio-blue);
+      color: white;
+      border: 0;
+      border-radius: 10px;
+      padding: 0.6rem 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .clio-calculator-wrap button.ghost {
+      background: transparent;
+      color: var(--clio-blue);
+      border: 1px solid var(--clio-blue);
+    }
+
+    .clio-calculator-wrap .output .deadline {
+      font-size: 1.45rem;
+      font-weight: 800;
+      margin: 0.2rem 0;
+      color: var(--clio-navy);
+    }
+
+    .clio-calculator-wrap #reminderList { padding-left: 1.1rem; margin-bottom: 1rem; }
+
+    .clio-calculator-wrap .cta-strip {
+      background: #0f244d;
+      color: white;
+      padding: 1.7rem 0;
+    }
+
+    .clio-calculator-wrap .cta-inner {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .clio-calculator-wrap dialog {
+      border: 0;
+      border-radius: 14px;
+      width: min(470px, 92vw);
+      padding: 0;
+    }
+
+    .clio-calculator-wrap dialog::backdrop { background: rgba(5, 21, 45, 0.45); }
+    .clio-calculator-wrap #leadForm { padding: 1.2rem; }
+
+    .clio-calculator-wrap menu {
+      display: flex;
+      justify-content: end;
+      gap: 0.5rem;
+      padding: 0;
+      margin-top: 1rem;
+    }
+
+    @media (max-width: 880px) {
+      .clio-calculator-wrap .hero-grid,
+      .clio-calculator-wrap .main-grid,
+      .clio-calculator-wrap .cta-inner,
+      .clio-calculator-wrap .field-grid {
+        grid-template-columns: 1fr;
+        display: grid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="clio-calculator-wrap">
+    <header class="hero">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">Free Legal Toolkit</p>
+          <h1>Legal Deadline Calculator</h1>
+          <p class="hero-copy">Calculate filing and response deadlines in seconds, using court-style business day logic, reminder offsets, and optional calendar export.</p>
+          <ul class="hero-list">
+            <li>Supports calendar days, business days, and “court days” logic.</li>
+            <li>Auto-adjusts deadlines that land on weekends and holidays.</li>
+            <li>Save your deadline pack to calendar with a free Clio account.</li>
+          </ul>
+        </div>
+        <aside class="insight-card">
+          <h2>How this one-ups typical calculators</h2>
+          <ol>
+            <li><strong>Scenario-aware reminders:</strong> instantly generate 3 reminder checkpoints.</li>
+            <li><strong>Semi-gated value:</strong> core calculation stays free, export requires email.</li>
+            <li><strong>Action-ready output:</strong> add to calendar through an .ics download workflow.</li>
+          </ol>
+        </aside>
+      </div>
+    </header>
+
+    <main class="container main-grid">
+      <section class="card" aria-labelledby="calculator-heading">
+        <h2 id="calculator-heading">Calculate a deadline</h2>
+        <form id="calculator-form-inline">
+          <div class="field-grid">
+            <label>Trigger date<input required type="date" id="triggerDate-inline" /></label>
+            <label>Deadline direction
+              <select id="direction-inline">
+                <option value="after">After trigger date</option>
+                <option value="before">Before trigger date</option>
+              </select>
+            </label>
+            <label>Number of days<input required type="number" min="1" max="3650" value="30" id="dayCount-inline" /></label>
+            <label>Counting method
+              <select id="countMethod-inline">
+                <option value="calendar">Calendar days</option>
+                <option value="business">Business days (Mon–Fri)</option>
+                <option value="court">Court days (Mon–Fri + holidays)</option>
+              </select>
+            </label>
+            <label>Weekend/holiday adjustment
+              <select id="rollRule-inline">
+                <option value="next">Roll forward to next business day</option>
+                <option value="previous">Roll backward to previous business day</option>
+                <option value="none">No adjustment</option>
+              </select>
+            </label>
+            <label>Jurisdiction profile
+              <select id="jurisdiction-inline">
+                <option value="federal">US Federal (sample holidays)</option>
+                <option value="california">California (sample holidays)</option>
+                <option value="newyork">New York (sample holidays)</option>
+              </select>
+            </label>
+          </div>
+
+          <fieldset class="reminder-group">
+            <legend>Reminder offsets (days before deadline)</legend>
+            <div class="chips">
+              <label><input type="checkbox" value="30" checked />30</label>
+              <label><input type="checkbox" value="14" checked />14</label>
+              <label><input type="checkbox" value="7" checked />7</label>
+              <label><input type="checkbox" value="3" />3</label>
+              <label><input type="checkbox" value="1" />1</label>
+            </div>
+          </fieldset>
+
+          <div class="actions">
+            <button type="submit">Calculate deadline</button>
+            <button type="button" id="resetBtn-inline" class="ghost">Reset</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card output" aria-live="polite">
+        <h2>Results</h2>
+        <div id="resultEmpty-inline">Enter details to calculate your legal deadline.</div>
+        <div id="resultContent-inline" hidden>
+          <p class="deadline" id="deadlineText-inline"></p>
+          <p id="metaText-inline"></p>
+          <h3>Suggested reminders</h3>
+          <ul id="reminderList-inline"></ul>
+          <div class="actions">
+            <button type="button" id="downloadIcs-inline">Download .ics file</button>
+            <button type="button" id="connectCalendar-inline" class="ghost">Connect calendar in Clio</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <section class="cta-strip">
+      <div class="container cta-inner">
+        <div>
+          <h2>Need more than a calculator?</h2>
+          <p>Automate deadlines, reminders, and task workflows with Clio Manage.</p>
+        </div>
+        <a href="#" class="cta-btn">Start free trial</a>
+      </div>
+    </section>
+
+    <dialog id="leadDialog-inline">
+      <form method="dialog" id="leadForm-inline">
+        <h2>Save this deadline to your calendar</h2>
+        <p>Core calculations are always free. Enter your details to download calendar events and get deadline updates.</p>
+        <label>Work email<input type="email" id="leadEmail-inline" required placeholder="you@firm.com" /></label>
+        <label>Firm name<input type="text" id="leadFirm-inline" required placeholder="Example Law LLP" /></label>
+        <menu>
+          <button value="cancel" class="ghost" type="button" id="closeDialog-inline">Cancel</button>
+          <button value="default" type="submit">Unlock export</button>
+        </menu>
+      </form>
+    </dialog>
+  </div>
+
+  <script>
+    (function () {
+      const form = document.getElementById('calculator-form-inline');
+      const resultEmpty = document.getElementById('resultEmpty-inline');
+      const resultContent = document.getElementById('resultContent-inline');
+      const deadlineText = document.getElementById('deadlineText-inline');
+      const metaText = document.getElementById('metaText-inline');
+      const reminderList = document.getElementById('reminderList-inline');
+      const leadDialog = document.getElementById('leadDialog-inline');
+
+      const holidayProfiles = {
+        federal: ['01-01', '07-04', '11-11', '12-25'],
+        california: ['01-01', '03-31', '07-04', '11-28', '12-25'],
+        newyork: ['01-01', '02-12', '07-04', '11-28', '12-25']
+      };
+
+      let latestResult = null;
+      let exportUnlocked = false;
+
+      function isWeekend(date) {
+        const day = date.getDay();
+        return day === 0 || day === 6;
+      }
+
+      function isHoliday(date, profile) {
+        const monthDay = `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        return holidayProfiles[profile].includes(monthDay);
+      }
+
+      function isBusinessDay(date, profile) {
+        return !isWeekend(date) && !isHoliday(date, profile);
+      }
+
+      function moveByOne(date, direction) {
+        const next = new Date(date);
+        next.setDate(next.getDate() + (direction === 'after' ? 1 : -1));
+        return next;
+      }
+
+      function calculateDeadline({ triggerDate, direction, dayCount, countMethod, rollRule, jurisdiction }) {
+        let current = new Date(`${triggerDate}T00:00:00`);
+
+        if (countMethod === 'calendar') {
+          current.setDate(current.getDate() + (direction === 'after' ? dayCount : -dayCount));
+        } else {
+          let traversed = 0;
+          while (traversed < dayCount) {
+            current = moveByOne(current, direction);
+            if (countMethod === 'business' && !isWeekend(current)) traversed += 1;
+            if (countMethod === 'court' && isBusinessDay(current, jurisdiction)) traversed += 1;
+          }
+        }
+
+        if (rollRule !== 'none') {
+          while (!isBusinessDay(current, jurisdiction)) {
+            current = moveByOne(current, rollRule === 'next' ? 'after' : 'before');
+          }
+        }
+
+        return current;
+      }
+
+      function formatDate(date) {
+        return new Intl.DateTimeFormat('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(date);
+      }
+
+      function toIcsDate(date) {
+        const y = date.getUTCFullYear();
+        const m = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const d = String(date.getUTCDate()).padStart(2, '0');
+        return `${y}${m}${d}`;
+      }
+
+      function downloadICS() {
+        if (!latestResult) return;
+
+        const deadlineDate = toIcsDate(latestResult.deadline);
+        const reminders = latestResult.reminders.map((entry, idx) => {
+          const date = toIcsDate(entry.date);
+          return `BEGIN:VEVENT\nUID:reminder-${idx}@clio\nDTSTAMP:${deadlineDate}T120000Z\nDTSTART;VALUE=DATE:${date}\nSUMMARY:Reminder: legal deadline in ${entry.offset} day(s)\nEND:VEVENT`;
+        }).join('\n');
+
+        const content = `BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Clio//Deadline Calculator//EN\nBEGIN:VEVENT\nUID:deadline-main@clio\nDTSTAMP:${deadlineDate}T120000Z\nDTSTART;VALUE=DATE:${deadlineDate}\nSUMMARY:Legal deadline\nEND:VEVENT\n${reminders}\nEND:VCALENDAR`;
+
+        const blob = new Blob([content], { type: 'text/calendar;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'legal-deadline.ics';
+        link.click();
+        URL.revokeObjectURL(link.href);
+      }
+
+      form.addEventListener('submit', function (event) {
+        event.preventDefault();
+
+        const data = {
+          triggerDate: document.getElementById('triggerDate-inline').value,
+          direction: document.getElementById('direction-inline').value,
+          dayCount: Number(document.getElementById('dayCount-inline').value),
+          countMethod: document.getElementById('countMethod-inline').value,
+          rollRule: document.getElementById('rollRule-inline').value,
+          jurisdiction: document.getElementById('jurisdiction-inline').value
+        };
+
+        const selectedOffsets = Array.from(form.querySelectorAll('.chips input:checked')).map(function (checkbox) {
+          return Number(checkbox.value);
+        }).sort(function (a, b) { return b - a; });
+
+        const deadline = calculateDeadline(data);
+        const reminders = selectedOffsets.map(function (offset) {
+          return { offset, date: new Date(deadline.getFullYear(), deadline.getMonth(), deadline.getDate() - offset) };
+        }).filter(function (entry) { return !Number.isNaN(entry.date.getTime()); });
+
+        latestResult = { data, deadline, reminders };
+
+        deadlineText.textContent = formatDate(deadline);
+        metaText.textContent = `${data.dayCount} ${data.countMethod} day(s), ${data.direction} ${data.triggerDate}, ${data.rollRule === 'none' ? 'no roll adjustment' : `${data.rollRule} roll adjustment`}, ${data.jurisdiction} profile.`;
+        reminderList.innerHTML = reminders.length
+          ? reminders.map(function (entry) { return `<li>${entry.offset} day reminder — ${formatDate(entry.date)}</li>`; }).join('')
+          : '<li>No reminders selected.</li>';
+
+        resultEmpty.hidden = true;
+        resultContent.hidden = false;
+      });
+
+      document.getElementById('resetBtn-inline').addEventListener('click', function () {
+        form.reset();
+        resultContent.hidden = true;
+        resultEmpty.hidden = false;
+        latestResult = null;
+      });
+
+      document.getElementById('downloadIcs-inline').addEventListener('click', function () {
+        if (!exportUnlocked) {
+          leadDialog.showModal();
+          return;
+        }
+        downloadICS();
+      });
+
+      document.getElementById('connectCalendar-inline').addEventListener('click', function () {
+        if (!exportUnlocked) {
+          leadDialog.showModal();
+          return;
+        }
+        window.alert('Thanks! In production, this would connect to Clio calendar integrations.');
+      });
+
+      document.getElementById('closeDialog-inline').addEventListener('click', function () { leadDialog.close(); });
+
+      document.getElementById('leadForm-inline').addEventListener('submit', function (event) {
+        event.preventDefault();
+        const email = document.getElementById('leadEmail-inline').value;
+        const firm = document.getElementById('leadFirm-inline').value;
+        if (!email || !firm) return;
+
+        exportUnlocked = true;
+        leadDialog.close();
+        downloadICS();
+      });
+    })();
+  </script>
+</body>
+</html>
