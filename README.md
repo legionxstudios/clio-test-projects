@@ -1,34 +1,34 @@
 # Sitemap Word Count Scraper
 
-A Python CLI tool that crawls a sitemap, fetches each page, and counts target word usage separately for:
+This project now includes both:
 
-- headings (`h1` through `h6`)
-- body text
+- a CLI for scripted runs
+- a browser-based UI for easier manual use
 
-It removes common navigation, header, and footer sections before counting so the results focus on main content rather than site chrome.
+The tool crawls a sitemap, fetches each page, excludes common nav/header/footer chrome, and counts target word usage separately in headings and body text.
 
-## Features
+## What you can use
 
-- Accepts a sitemap URL or sitemap index.
-- Splits counts into headings vs. body text.
-- Excludes common nav/footer/header regions before counting.
-- Supports multiple filter styles:
-  - `--word` for exact words or phrases
-  - `--regex` for regex-based matching
-  - `--any-words` for OR-style token matching
-  - `--all-words` for AND-style presence checks
-- Outputs either JSON or a readable table.
-- Lets you add extra CSS exclusion classes when needed.
+### Web UI
 
-## Install
+Start the UI locally:
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-# No external packages required.
+python app.py
 ```
 
-## Usage
+Then open: `http://localhost:7860`
+
+In the UI you can:
+
+- enter a sitemap URL
+- add exact words or phrases
+- add regex filters for wording variations
+- add OR and AND filter groups
+- add extra excluded classes such as `sidebar` or `breadcrumb`
+- review totals, per-page counts, and raw JSON
+
+### CLI
 
 ```bash
 python src/scrape_word_counts.py "https://example.com/sitemap.xml" \
@@ -39,14 +39,21 @@ python src/scrape_word_counts.py "https://example.com/sitemap.xml" \
   --output table
 ```
 
-## How exclusion works
+## Matching modes
 
-The tool removes common structural regions and class-based content chrome before extracting text:
+- `--word`: exact word or phrase matching
+- `--regex`: regex-based matching
+- `--any-words`: comma-separated OR token groups
+- `--all-words`: comma-separated AND presence groups
+
+## Exclusions
+
+The analyzer ignores these patterns by default before counting text:
 
 - `nav`
 - `header`
 - `footer`
-- `[role='navigation']`
+- `[role="navigation"]`
 - `.nav`
 - `.navbar`
 - `.menu`
@@ -54,29 +61,27 @@ The tool removes common structural regions and class-based content chrome before
 - `.site-footer`
 - `.site-header`
 
-You can add more exclusions with repeated `--exclude-class` arguments, for example:
+You can add more excluded classes in the UI or via the CLI.
+
+## Free hosting option
+
+The repo now includes a `Dockerfile` so you can host the UI for free on **Hugging Face Spaces** as a Docker Space.
+
+### Suggested free deployment steps
+
+1. Create a free Hugging Face account.
+2. Create a new **Docker Space**.
+3. Push this repository to that Space.
+4. Hugging Face will build the `Dockerfile` and expose the app on port `7860`.
+
+The app entry point is:
 
 ```bash
-python src/scrape_word_counts.py "https://example.com/sitemap.xml" \
-  --word pricing \
-  --exclude-class ".sidebar" \
-  --exclude-class ".breadcrumb"
+python app.py
 ```
-
-## Output shape
-
-JSON output contains:
-
-- `sitemap_url`
-- `page_count`
-- `patterns`
-- `totals`
-- `pages`
-
-Each page includes the URL plus separate `headings` and `body` counts for every filter.
 
 ## Notes
 
-- `--word` uses word-boundary matching, which works best for single words and simple phrases.
-- `--all-words` returns `1` per section if all listed words are present, rather than a repeated frequency total.
-- If you want custom logic like stemming or fuzzy matching, this CLI is structured so those modes can be added later.
+- No third-party Python packages are required.
+- The UI runs on the standard library WSGI server, so it is easy to run locally and easy to containerize.
+- If you want CSV export, authentication, or persistent saved reports, those can be added next.
